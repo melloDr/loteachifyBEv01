@@ -21,17 +21,17 @@ public partial class LoTeachify01DbContext : DbContext
 
     public virtual DbSet<TblInstructore> TblInstructores { get; set; }
 
+    public virtual DbSet<TblUser> TblUsers { get; set; }
+
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseSqlServer("Data Source=loteachify01db.database.windows.net;Initial Catalog=loTeachify01Db;Persist Security Info=True;User ID=loteachify;Password=Mellodragon!1;Encrypt=True;TrustServerCertificate=True");
+        => optionsBuilder.UseSqlServer("Server=loteachify01db.database.windows.net;Initial Catalog=loTeachify01Db;Persist Security Info=True;User ID=loteachify;Password=Mellodragon!1;Encrypt=True;TrustServerCertificate=True");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<TblCity>(entity =>
         {
-            entity
-                .HasNoKey()
-                .ToTable("tblCities");
+            entity.ToTable("tblCities");
 
             entity.Property(e => e.Id)
                 .HasDefaultValueSql("(newid())")
@@ -43,9 +43,7 @@ public partial class LoTeachify01DbContext : DbContext
 
         modelBuilder.Entity<TblCourse>(entity =>
         {
-            entity
-                .HasNoKey()
-                .ToTable("tblCourses");
+            entity.ToTable("tblCourses");
 
             entity.Property(e => e.Id)
                 .HasDefaultValueSql("(newid())")
@@ -57,10 +55,11 @@ public partial class LoTeachify01DbContext : DbContext
 
         modelBuilder.Entity<TblInstructore>(entity =>
         {
-            entity
-                .HasNoKey()
-                .ToTable("tblInstructores");
+            entity.ToTable("tblInstructores");
 
+            entity.Property(e => e.Id)
+                .ValueGeneratedNever()
+                .HasColumnName("id");
             entity.Property(e => e.City)
                 .HasMaxLength(50)
                 .HasColumnName("city");
@@ -85,7 +84,6 @@ public partial class LoTeachify01DbContext : DbContext
             entity.Property(e => e.HourlyRate)
                 .HasMaxLength(50)
                 .HasColumnName("hourlyRate");
-            entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.ImageArray)
                 .HasMaxLength(500)
                 .HasColumnName("imageArray");
@@ -104,6 +102,23 @@ public partial class LoTeachify01DbContext : DbContext
             entity.Property(e => e.Phone)
                 .HasMaxLength(50)
                 .HasColumnName("phone");
+        });
+
+        modelBuilder.Entity<TblUser>(entity =>
+        {
+            entity.ToTable("tblUsers");
+
+            entity.Property(e => e.Id)
+                .ValueGeneratedNever()
+                .HasColumnName("id");
+            entity.Property(e => e.Email)
+                .HasMaxLength(50)
+                .IsFixedLength()
+                .HasColumnName("email");
+            entity.Property(e => e.Password)
+                .HasMaxLength(50)
+                .IsFixedLength()
+                .HasColumnName("password");
         });
 
         OnModelCreatingPartial(modelBuilder);

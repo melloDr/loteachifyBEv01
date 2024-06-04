@@ -1,5 +1,7 @@
 using Microsoft.EntityFrameworkCore;
+using TeachifyBE_Business.Services;
 using TeachifyBE_Data.Entities;
+using TeachifyBE_Data.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,6 +16,9 @@ builder.Services.AddDbContext<LoTeachify01DbContext>(option =>
     option.UseSqlServer(builder.Configuration.GetConnectionString("loTeachify")));
 
 //Service and repository
+builder.Services.AddScoped<IGeneralService, GeneralService>();
+
+builder.Services.AddTransient<IGeneralRepo, GeneralRepo>();
 
 
 var app = builder.Build();
