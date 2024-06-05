@@ -19,10 +19,10 @@ jobs:
           dotnet-version: '6.0.x'
 
       - name: Restore
-        run: dotnet restore ./TeachifyBE.Api.sln
+        run: dotnet restore ./TeachifyBE.Api/TeachifyBE.Api.sln
 
       - name: Build
-        run: dotnet build ./TeachifyBE.Api.sln --configuration Release --no-restore
+        run: dotnet build ./TeachifyBE.Api/TeachifyBE.Api.sln --configuration Release --no-restore
 
       - name: Publish
-        run: dotnet publish ./TeachifyBE.Api.sln --configuration Release --no-build
+        run: dotnet publish ./TeachifyBE.Api/TeachifyBE.Api.sln --configuration Release --no-build
