@@ -10,4 +10,8 @@ public partial class TblUser
     public string? Email { get; set; }
 
     public string? Password { get; set; }
+
+    public Guid? RoleId { get; set; }
+
+    public virtual TblRole? Role { get; set; }
 }

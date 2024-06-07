@@ -10,6 +10,7 @@ namespace TeachifyBE_Business.Services
     public interface IGeneralService
     {
         Task<ResultModel> RegisterUser(string email, string password, string confirmPassword);
+        Task<ResultModel> Token(string email, string password);
         Task<ResultModel> GetListUserAll();
     }
 }

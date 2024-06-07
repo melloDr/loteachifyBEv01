@@ -9,8 +9,10 @@ namespace TeachifyBE_Data.Repositories
 {
     public interface IGeneralRepo
     {
+        //User
         public Task<bool> RegisterUser(string email, string password);
         public Task<List<TblUser>> GetListUser();
+        public Task<TblUser> GetUser(string email, string password);
 
 
     }

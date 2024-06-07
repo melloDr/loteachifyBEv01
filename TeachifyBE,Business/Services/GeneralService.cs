@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TeachifyBE_Business.Utils;
 using TeachifyBE_Data.Models.ResultModel;
 using TeachifyBE_Data.Repositories;
 
@@ -54,6 +55,38 @@ namespace TeachifyBE_Business.Services
                 resultModel.Code = 400;
                 resultModel.Message = "Register fail!";
             }
+            return resultModel;
+        }
+
+        public async Task<ResultModel> Token(string email, string password)
+        {
+            var resultModel = new ResultModel();
+
+            var tblUser = await _generalRepo.GetUser(email.Trim(), password.Trim());
+            if (tblUser == null)
+            {
+                return new ResultModel()
+                {
+                    IsSuccess = false,
+                    Code = 400,
+                    Message = "You may have entered the wrong email or password!"
+                };
+            }
+
+            string token = ClassSup.CreateToken(email, tblUser.Id, "user");
+
+            if (token == null)
+            {
+                return new ResultModel()
+                {
+                    Code = 400,
+                    IsSuccess = false,
+                    Message = "Create Token fail!"
+                };
+            }
+            resultModel.Code = 200;
+            resultModel.Data = token;
+            resultModel.IsSuccess = true;
             return resultModel;
         }
     }

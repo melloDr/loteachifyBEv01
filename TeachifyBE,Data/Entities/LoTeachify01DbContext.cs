@@ -21,6 +21,8 @@ public partial class LoTeachify01DbContext : DbContext
 
     public virtual DbSet<TblInstructore> TblInstructores { get; set; }
 
+    public virtual DbSet<TblRole> TblRoles { get; set; }
+
     public virtual DbSet<TblUser> TblUsers { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -104,12 +106,25 @@ public partial class LoTeachify01DbContext : DbContext
                 .HasColumnName("phone");
         });
 
+        modelBuilder.Entity<TblRole>(entity =>
+        {
+            entity.ToTable("tblRoles");
+
+            entity.Property(e => e.Id)
+                .HasDefaultValueSql("(newid())")
+                .HasColumnName("id");
+            entity.Property(e => e.RoleName)
+                .HasMaxLength(20)
+                .IsFixedLength()
+                .HasColumnName("roleName");
+        });
+
         modelBuilder.Entity<TblUser>(entity =>
         {
             entity.ToTable("tblUsers");
 
             entity.Property(e => e.Id)
-                .ValueGeneratedNever()
+                .HasDefaultValueSql("(newid())")
                 .HasColumnName("id");
             entity.Property(e => e.Email)
                 .HasMaxLength(50)
@@ -119,6 +134,11 @@ public partial class LoTeachify01DbContext : DbContext
                 .HasMaxLength(50)
                 .IsFixedLength()
                 .HasColumnName("password");
+            entity.Property(e => e.RoleId).HasColumnName("roleId");
+
+            entity.HasOne(d => d.Role).WithMany(p => p.TblUsers)
+                .HasForeignKey(d => d.RoleId)
+                .HasConstraintName("FK_tblUsers_tblRoles");
         });
 
         OnModelCreatingPartial(modelBuilder);

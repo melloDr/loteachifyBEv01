@@ -23,6 +23,12 @@ namespace TeachifyBE_Data.Repositories
             return await _context.TblUsers.ToListAsync();
         }
 
+        public async Task<TblUser> GetUser(string email, string password)
+        {
+            return await _context.TblUsers.Where(x => x.Email.Trim().Equals(email) 
+                && x.Password.Trim().Equals(password)).FirstOrDefaultAsync();
+        }
+
         public async Task<bool> RegisterUser(string email, string password)
         {
             var userEntity = new TblUser()
