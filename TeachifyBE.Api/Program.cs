@@ -3,13 +3,13 @@ using TeachifyBE_Business.Services;
 using TeachifyBE_Data.Entities;
 using TeachifyBE_Data.Repositories;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using static Microsoft.AspNetCore.Identity.IdentityBuilder;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using TeachifyBE_Data.Models.ConfigModel;
+using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,7 +19,44 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(c => {
+    c.EnableAnnotations();
+    c.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Version = "v1",
+        Title = "Teachify.API",
+        Description = "APIs for Teachify"
+    });
+
+    OpenApiSecurityScheme securityScheme = new()
+    {
+        Description = "JWT Authorization header using the Bearer scheme. " +
+                        "\n\nEnter 'Bearer' [space] and then your token in the text input below. " +
+                          "\n\nExample: 'Bearer 12345abcde'",
+        Name = "Authorization",
+        In = ParameterLocation.Header,
+        Type = SecuritySchemeType.ApiKey,
+        Scheme = "Bearer",
+        BearerFormat = "JWT",
+        Reference = new OpenApiReference()
+        {
+            Type = ReferenceType.SecurityScheme,
+            Id = "Bearer"
+        }
+    };
+    c.AddSecurityDefinition("Bearer", securityScheme);
+
+    c.AddSecurityRequirement(new OpenApiSecurityRequirement()
+                {
+                    {
+                        securityScheme,
+                        new string[]{ }
+                    }
+                });
+
+
+});
+       
 // Database
 builder.Services.AddDbContext<LoTeachify01DbContext>(option => 
     option.UseSqlServer(builder.Configuration.GetConnectionString("loTeachify")));

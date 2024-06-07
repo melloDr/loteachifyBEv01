@@ -22,6 +22,7 @@ namespace TeachifyBE.API.Controllers
             return result.IsSuccess ? Ok(result) : BadRequest(result);
         }
 
+        [Authorize]
         [HttpGet("GetAllUser")]
         public async Task<IActionResult> GetAllUser()
         {
@@ -32,7 +33,7 @@ namespace TeachifyBE.API.Controllers
         [HttpGet("Token")]
         public async Task<IActionResult> Token(string email, string password)
         {
-            ResultModel result = await _service.Token(email, password);
+                ResultModel result = await _service.Token(email, password);
             return result.IsSuccess ? Ok(result) : BadRequest(result);
         }
     }
