@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TeachifyBE_Business.Utils;
+using TeachifyBE_Data.Models.CityModel;
+using TeachifyBE_Data.Models.CourseModel;
 using TeachifyBE_Data.Models.ResultModel;
 using TeachifyBE_Data.Repositories;
 
@@ -17,6 +19,7 @@ namespace TeachifyBE_Business.Services
             _generalRepo = generalRepo;
         }
 
+        #region
         public async Task<ResultModel> GetListUserAll()
         {
             var result = await _generalRepo.GetListUser();
@@ -26,8 +29,7 @@ namespace TeachifyBE_Business.Services
                 Data = result,
                 IsSuccess = true
             };
-            return resultModel;
-            
+            return resultModel;            
         }
 
         public async Task<ResultModel> RegisterUser(string email, string password, string confirmPassword)
@@ -89,5 +91,50 @@ namespace TeachifyBE_Business.Services
             resultModel.IsSuccess = true;
             return resultModel;
         }
+        #endregion
+
+        #region others
+        public async Task<ResultModel> Cities()
+        {
+            var listCities = await _generalRepo.GetListCities();
+            List<CityModel> nameCouses = new List<CityModel>();
+            foreach (var item in listCities)
+            {
+                var city = new CityModel()
+                {
+                    Name = item.Name
+                };
+                nameCouses.Add(city);
+            }
+
+            return new ResultModel()
+            {
+                Code = 200,
+                Data = nameCouses,
+                IsSuccess = true,
+            };
+
+        }
+        public async Task<ResultModel> Courses()
+        {
+            var listCities = await _generalRepo.GetListCourses();
+            List<CourseModel> nameCouses = new List<CourseModel>();
+            foreach (var item in listCities) 
+            { 
+                var city = new CourseModel()
+                {
+                    Name = item.Name
+                };
+                nameCouses.Add(city);
+            }
+
+            return new ResultModel()
+            {
+                Code = 200,
+                Data = nameCouses,
+                IsSuccess = true,
+            };
+        }
+        #endregion
     }
 }

@@ -18,6 +18,7 @@ namespace TeachifyBE_Data.Repositories
             _context = context;
         }
 
+        #region user
         public async Task<List<TblUser>> GetListUser()
         {
             return await _context.TblUsers.ToListAsync();
@@ -40,6 +41,17 @@ namespace TeachifyBE_Data.Repositories
             var userResult = await _context.TblUsers.AddAsync(userEntity);
             await _context.SaveChangesAsync();
             return userResult != null;
+        }
+        #endregion
+
+        public async Task<List<TblCity>> GetListCities()
+        {
+            return await _context.TblCities.ToListAsync();
+        }
+
+        public async Task<List<TblCourse>> GetListCourses()
+        {
+            return await _context.TblCourses.ToListAsync();
         }
     }
 }

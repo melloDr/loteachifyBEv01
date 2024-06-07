@@ -9,10 +9,16 @@ namespace TeachifyBE_Data.Repositories
 {
     public interface IGeneralRepo
     {
-        //User
+        #region user
         public Task<bool> RegisterUser(string email, string password);
         public Task<List<TblUser>> GetListUser();
         public Task<TblUser> GetUser(string email, string password);
+        #endregion
+
+        #region others
+        public Task<List<TblCity>> GetListCities();
+        public Task<List<TblCourse>> GetListCourses();
+        #endregion
 
 
     }
