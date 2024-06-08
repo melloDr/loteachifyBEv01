@@ -4,9 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TeachifyBE_Business.Utils;
+using TeachifyBE_Data.Entities;
 using TeachifyBE_Data.Models.CityModel;
 using TeachifyBE_Data.Models.CourseModel;
 using TeachifyBE_Data.Models.ResultModel;
+using TeachifyBE_Data.Models.UserModel;
 using TeachifyBE_Data.Repositories;
 
 namespace TeachifyBE_Business.Services
@@ -45,18 +47,45 @@ namespace TeachifyBE_Business.Services
             }
 
             bool check = await _generalRepo.RegisterUser(email, password);
-            if (check)
-            {
-                resultModel.IsSuccess = true;
-                resultModel.Code = 201;
-                resultModel.Message = "Register sucessfully!";
-            }
-            else
+            if (!check)
             {
                 resultModel.IsSuccess = false;
                 resultModel.Code = 400;
                 resultModel.Message = "Register fail!";
+                return resultModel;
             }
+            var tblUser = await _generalRepo.GetUser(email.Trim(), password.Trim());
+            if (tblUser == null)
+            {
+                resultModel.IsSuccess = false;
+                resultModel.Code = 400;
+                resultModel.Message = "User dont found!";
+                return resultModel;
+            }
+            string token = ClassSup.CreateToken(email, tblUser.Id, "user");
+
+            if (token == null)
+            {
+                return new ResultModel()
+                {
+                    Code = 400,
+                    IsSuccess = false,
+                    Message = "Create Token fail!"
+                };
+            }
+            DateTime now = DateTime.Now;
+            var tokenModel = new TokenModel()
+            {
+                access_token = token,
+                expires_in = 1209599,
+                userName = email,
+                issued = now.ToString(),
+                expires = now.AddDays(1).ToString(),
+                token_type = "bearer"
+            };
+            resultModel.Code = 200;
+            resultModel.Data = tokenModel;
+            resultModel.IsSuccess = true;
             return resultModel;
         }
 
@@ -86,8 +115,18 @@ namespace TeachifyBE_Business.Services
                     Message = "Create Token fail!"
                 };
             }
+            DateTime now = DateTime.Now;
+            var tokenModel = new TokenModel()
+            {
+                access_token = token,
+                expires_in = 1209599,
+                userName = email,
+                issued = now.ToString(),
+                expires = now.AddDays(1).ToString(),
+                token_type = "bearer"
+            };
             resultModel.Code = 200;
-            resultModel.Data = token;
+            resultModel.Data = tokenModel;
             resultModel.IsSuccess = true;
             return resultModel;
         }
