@@ -4,9 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TeachifyBE_Business.Utils;
+using TeachifyBE_Business.Utils.TokenService;
 using TeachifyBE_Data.Entities;
 using TeachifyBE_Data.Models.CityModel;
 using TeachifyBE_Data.Models.CourseModel;
+using TeachifyBE_Data.Models.InstructorModel;
 using TeachifyBE_Data.Models.ResultModel;
 using TeachifyBE_Data.Models.UserModel;
 using TeachifyBE_Data.Repositories;
@@ -16,12 +18,14 @@ namespace TeachifyBE_Business.Services
     public class GeneralService : IGeneralService
     {
         private readonly IGeneralRepo _generalRepo;
+        private readonly DecodeToken _decodeToken;
         public GeneralService(IGeneralRepo generalRepo)
         {
+            _decodeToken = new DecodeToken();
             _generalRepo = generalRepo;
         }
 
-        #region
+        #region user
         public async Task<ResultModel> GetListUserAll()
         {
             var result = await _generalRepo.GetListUser();
@@ -130,6 +134,66 @@ namespace TeachifyBE_Business.Services
             resultModel.IsSuccess = true;
             return resultModel;
         }
+
+        public async Task<ResultModel> ChangePassword(string oldPassword, string newPassword, string confirmPassword, string token)
+        {
+            Guid userId = Guid.Parse(_decodeToken.Decode(token, "userid"));
+            if (confirmPassword.Trim() != newPassword.Trim())
+            {
+                return new ResultModel()
+                {
+                    Code = 400,
+                    IsSuccess = false,
+                    Message = "Please confirm your password again!"
+                };
+            }
+            if (! await _generalRepo.CheckPassword(userId,oldPassword))
+            {
+                return new ResultModel()
+                {
+                    Code = 400,
+                    IsSuccess = false,
+                    Message = "Old password incorrect!"
+                };
+            }
+            bool isChangedPassword = await _generalRepo.ChangePassword(userId,newPassword);
+            if (!isChangedPassword)
+            {
+                return new ResultModel()
+                {
+                    Code = 400,
+                    IsSuccess = false,
+                    Message = "Cannot change password!"
+                };
+            }
+            return new ResultModel()
+            {
+                Code = 200,
+                IsSuccess = true,
+                Message = "Password changed successfully!"
+            };
+        }
+
+        public async Task<ResultModel> PasswordRecovery(string email)
+        {
+            var resultModel = new ResultModel();
+
+            bool isRecoveredPassword = await _generalRepo.PasswordRecovery(email);
+            if (!isRecoveredPassword)
+            {
+                return new ResultModel()
+                {
+                    Code = 400,
+                    IsSuccess = false,
+                    Message = "Recover Password Fail!"
+                };
+            }
+
+            resultModel.IsSuccess = true;
+            resultModel.Code = 200;
+            resultModel.Data = true;
+            return resultModel;
+        }
         #endregion
 
         #region others
@@ -174,6 +238,80 @@ namespace TeachifyBE_Business.Services
                 IsSuccess = true,
             };
         }
+        #endregion
+
+
+        #region Instructor
+        public async Task<ResultModel> BecomeAnInstructor(InstructorModel model)
+        {
+            var resultModel = new ResultModel();
+            var newInstructor = new TblInstructore()
+            {
+                Id = Guid.NewGuid(),
+                City = model.City,
+                CourseDomain = model.CourseDomain,
+                Description = model.Description,
+                Education = model.Education,
+                Email = model.Email,
+                Experience = model.Experience,
+                Gender = model.Gender,
+                HourlyRate = model.HourlyRate,
+                ImageArray = model.ImageArray,
+                Language = model.Language,
+                Name = model.Name,
+                Nationality = model.Nationality,
+                OneLineTitle = model.OneLineTitle,
+                Phone = model.Phone
+
+            };
+            bool check = await _generalRepo.BecomeAnInstructor(newInstructor);
+            if (!check)
+            {
+                return new ResultModel()
+                {
+                    Code = 400,
+                    IsSuccess = false,
+                    Message = "Become new instructor fail!"
+                };
+            }
+            resultModel.IsSuccess = true;
+            resultModel.Code = 201;
+            resultModel.Data = newInstructor;
+            resultModel.Message = "Welcome to become an instructor!";
+            return resultModel;
+        }
+
+        public async Task<ResultModel> GetIntructors(Guid? id, string? subject, string? gender, string? city)
+        {
+            var resultModel = new ResultModel();
+            if (id != null)
+            {
+                var instructorEntity = await _generalRepo.GetIntructor((Guid)id);
+                return new ResultModel()
+                {
+                    IsSuccess = true,
+                    Code = 200,
+                    Data = instructorEntity
+                };
+            }
+            if (subject != null && gender != null && city != null )
+            {
+                return new ResultModel()
+                {
+                    Code = 200,
+                    IsSuccess = true,
+                    Data = await _generalRepo.SearchIntructors(subject, gender, city)
+                };
+            }
+
+            var listInstructors = await _generalRepo.GetIntructors();
+
+            resultModel.IsSuccess = true;
+            resultModel.Code = 201;
+            resultModel.Data = listInstructors;
+            return resultModel;
+        }
+
         #endregion
     }
 }

@@ -22,6 +22,15 @@ namespace TeachifyBE.API.Controllers
             return result.IsSuccess ? Ok(result) : BadRequest(result);
         }
 
+        [HttpPost("ChangePassword")]
+        [Authorize]
+        public async Task<IActionResult> ChangePassword(string oldPassword, string newPassword, string confirmPassword)
+        {
+            string token = Request.Headers["Authorization"].ToString().Split(" ")[1];
+            ResultModel result = await _service.ChangePassword(oldPassword, newPassword, confirmPassword, token);
+            return result.IsSuccess ? Ok(result) : BadRequest(result);
+        }
+
         [Authorize]
         [HttpGet("GetAllUser")]
         public async Task<IActionResult> GetAllUser()
@@ -34,6 +43,13 @@ namespace TeachifyBE.API.Controllers
         public async Task<IActionResult> Token(string email, string password)
         {
                 ResultModel result = await _service.Token(email, password);
+            return result.IsSuccess ? Ok(result) : BadRequest(result);
+        }
+
+        [HttpPost("PasswordRecovery")]
+        public async Task<IActionResult> PasswordRecovery(string email)
+        {
+            ResultModel result = await _service.PasswordRecovery(email);
             return result.IsSuccess ? Ok(result) : BadRequest(result);
         }
     }
