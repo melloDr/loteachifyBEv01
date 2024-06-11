@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using TeachifyBE_Business.Services;
 using TeachifyBE_Data.Models.ResultModel;
+using TeachifyBE_Data.Models.UserModel;
 
 namespace TeachifyBE.API.Controllers
 {
@@ -16,18 +17,18 @@ namespace TeachifyBE.API.Controllers
         }
 
         [HttpPost("Register")]
-        public async Task<IActionResult> RegisterUser(string email, string password, string confirmPassword)
+        public async Task<IActionResult> RegisterUser([FromBody] RegisterUserResquestModel model)
         {
-            ResultModel result = await _service.RegisterUser(email, password, confirmPassword);
+            ResultModel result = await _service.RegisterUser(model.email, model.password, model.confirmPassword);
             return result.IsSuccess ? Ok(result) : BadRequest(result);
         }
 
         [HttpPost("ChangePassword")]
         [Authorize]
-        public async Task<IActionResult> ChangePassword(string oldPassword, string newPassword, string confirmPassword)
+        public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordResquestModel model)
         {
             string token = Request.Headers["Authorization"].ToString().Split(" ")[1];
-            ResultModel result = await _service.ChangePassword(oldPassword, newPassword, confirmPassword, token);
+            ResultModel result = await _service.ChangePassword(model.oldPassword, model.newPassword, model.confirmPassword, token);
             return result.IsSuccess ? Ok(result) : BadRequest(result);
         }
 
@@ -47,7 +48,7 @@ namespace TeachifyBE.API.Controllers
         }
 
         [HttpPost("PasswordRecovery")]
-        public async Task<IActionResult> PasswordRecovery(string email)
+        public async Task<IActionResult> PasswordRecovery([FromBody] string email)
         {
             ResultModel result = await _service.PasswordRecovery(email);
             return result.IsSuccess ? Ok(result) : BadRequest(result);

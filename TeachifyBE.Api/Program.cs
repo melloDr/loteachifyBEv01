@@ -19,6 +19,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
+
+#region Add bearer
 builder.Services.AddSwaggerGen(c => {
     c.EnableAnnotations();
     c.SwaggerDoc("v1", new OpenApiInfo
@@ -56,7 +58,8 @@ builder.Services.AddSwaggerGen(c => {
 
 
 });
-       
+#endregion
+
 // Database
 builder.Services.AddDbContext<LoTeachify01DbContext>(option => 
     option.UseSqlServer(builder.Configuration.GetConnectionString("loTeachify")));
