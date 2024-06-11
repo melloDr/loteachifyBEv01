@@ -48,9 +48,9 @@ namespace TeachifyBE.API.Controllers
         }
 
         [HttpPost("PasswordRecovery")]
-        public async Task<IActionResult> PasswordRecovery([FromBody] string email)
+        public async Task<IActionResult> PasswordRecovery([FromBody] PasswordRecoveryResquestModel model)
         {
-            ResultModel result = await _service.PasswordRecovery(email);
+            ResultModel result = await _service.PasswordRecovery(model.email);
             return result.IsSuccess ? Ok(result) : BadRequest(result);
         }
     }

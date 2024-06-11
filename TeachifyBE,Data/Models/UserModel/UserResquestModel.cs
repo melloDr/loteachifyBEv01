@@ -18,4 +18,8 @@ namespace TeachifyBE_Data.Models.UserModel
         public string newPassword { get; set; }
         public string confirmPassword { get; set; }
     }
+    public class PasswordRecoveryResquestModel
+    {
+        public string email { get; set; }
+    }
 }
